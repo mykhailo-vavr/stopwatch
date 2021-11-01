@@ -14,11 +14,7 @@
     <div class="container">
       <div class="stopwatch">
         <div class="stopwatch-clockwise" data-period="60"></div>
-        <div class="stopwatch-time_text">
-          <span data-time="minutes">00</span> :
-          <span data-time="seconds">00</span> :
-          <span data-time="milliseconds">00</span>
-        </div>
+        <div class="stopwatch-time_text">00 : 00 : 00</div>
         <div class="stopwatch-clock">
           <div
             class="stopwatch-clock-clockwise"
@@ -29,7 +25,6 @@
 
       <div class="controls">
         <div class="laps_container"></div>
-
         <div class="btn_container">
           <button
             class="btn start-btn"
@@ -55,7 +50,11 @@
           >
             Restart
           </button>
-          <button class="btn right-btn" data-action="startMeasuring">
+          <button
+            class="btn right-btn"
+            data-action="startMeasuring"
+            data-replace="lap-stop"
+          >
             Resume
           </button> -->
         </div>

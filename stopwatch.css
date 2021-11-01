@@ -46,7 +46,7 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  /* animation: rotate 60s cubic-bezier(1, 1, 1, 1) 0s infinite; */
+  /* animation: rotate 60s linear 0s infinite; */
 }
 
 .stopwatch-clockwise::after {
@@ -96,8 +96,7 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  transform: rotate(0deg);
-  /* animation: rotate 1s cubic-bezier(1, 1, 1, 1) 0s infinite; */
+  /* animation: rotate 1s linear 0s infinite; */
 }
 
 .stopwatch-clock-clockwise::after {
@@ -134,11 +133,21 @@ body {
   width: 220px;
 }
 
+.laps_container {
+  height: 135px;
+  overflow-y: scroll;
+  margin-top: -30px;
+}
+
+.laps_container::-webkit-scrollbar {
+  display: none;
+}
+
 .laps_container-item {
   border-bottom: 1px solid #2c2b2c;
   display: grid;
   padding-bottom: 5px;
-  margin-bottom: 15px;
+  padding-top: 15px;
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -161,12 +170,6 @@ body {
 .btn_container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-}
-
-.btn_container-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* display: none; */
 }
 
 .btn {

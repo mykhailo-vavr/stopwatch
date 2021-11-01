@@ -4,7 +4,6 @@ import { view } from './stopwatchView.js';
 export const controller = {
   start() {
     document.addEventListener('click', this.onClick.bind(this));
-    view.start();
   },
 
   onClick({ target }) {

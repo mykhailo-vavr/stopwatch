@@ -4,11 +4,12 @@ export const model = {
   timeList: ['minutes', 'seconds', 'milliseconds'],
   second: 1000,
   countOfLaps: 0,
-  milliseconds: 0,
-  millisecondsAfterLapFix: 0,
+  ms: 0,
+  msAfterPrevLapFix: 0,
+  msAfterCurrentLapFix: 0,
 
   startMeasuring() {
-    // view.animate('start');
+    view.animate('start');
     this.setTime();
     this.stopwatchID = setInterval(
       this.setTime.bind(this),
@@ -24,74 +25,55 @@ export const model = {
   restartMeasuring() {
     clearInterval(this.stopwatchID);
     this.countOfLaps = 0;
-    this.milliseconds = 0;
+    this.ms = 0;
+    this.msAfterPrevLapFix = 0;
+    this.msAfterCurrentLapFix = 0;
     view.restartMeasuring();
   },
 
   fixLap() {
+    let difference =
+      this.ms -
+      this.msAfterCurrentLapFix -
+      (this.msAfterCurrentLapFix - this.msAfterPrevLapFix);
+
     view.addLap({
-      count: ++this.countOfLaps
+      count: ++this.countOfLaps,
+      time: this.getTimeText(
+        this.ms - this.msAfterCurrentLapFix,
+        ':'
+      ),
+      difference: this.getTimeText(Math.abs(difference), ':'),
+      differenceSign: difference < 0 ? '-' : '+'
     });
-    this.millisecondsAfterLapFix = this.milliseconds;
+    this.msAfterPrevLapFix = this.msAfterCurrentLapFix;
+    this.msAfterCurrentLapFix = this.ms;
   },
 
   setTime() {
-    this.milliseconds++;
-
-    for (const timeName of this.timeList) {
-      const capitalizeFirst = word =>
-        word[0].toUpperCase() + word.slice(1);
-
-      let time = this['get' + capitalizeFirst(timeName)]();
-      view.setTimeToCell(timeName, time);
-    }
+    this.ms++;
+    view.setTime(this.getTimeText());
   },
 
-  getTimeText(time) {},
+  getTimeText(ms = this.ms, separator = ' : ') {
+    const capitalizeFirst = word =>
+      word[0].toUpperCase() + word.slice(1);
 
-  getMinutes(milliseconds = this.milliseconds) {
-    return Math.floor((milliseconds / 10 / 60) % 60);
+    return this.timeList
+      .map(timeName => this['get' + capitalizeFirst(timeName)](ms))
+      .map(time => (time <= 9 ? `0${time}` : time))
+      .join(separator);
   },
 
-  getSeconds(milliseconds = this.milliseconds) {
-    return Math.floor((milliseconds / 10) % 60);
+  getMinutes(ms = this.ms) {
+    return Math.floor((ms / 10 / 60) % 60);
   },
 
-  getMilliseconds(milliseconds = this.milliseconds) {
-    return milliseconds % 10;
+  getSeconds(ms = this.ms) {
+    return Math.floor((ms / 10) % 60);
+  },
+
+  getMilliseconds(ms = this.ms) {
+    return ms % 10;
   }
-
-  // setTime() {
-  //   const timeDifference = this.getTimeDifference();
-
-  //   for (const timeName of this.timeList) {
-  //     const capitalizeFirst = word =>
-  //       word[0].toUpperCase() + word.slice(1);
-
-  //     let time =
-  //       this['get' + capitalizeFirst(timeName)](timeDifference);
-  //     view.setTimeToCell(timeName, time);
-  //   }
-  // },
-
-  // getTimeDifference() {
-  //   console.log(this.timeAfterResume, this.timeAfterStop);
-  //   return (
-  //     Date.now() -
-  //     this.time -
-  //     ((this.timeAfterResume || 0) - (this.timeAfterStop || 0))
-  //   );
-  // },
-
-  // getMinutes(timestamp) {
-  //   return Math.floor((timestamp / 1000 / 60) % 60);
-  // },
-
-  // getSeconds(timestamp) {
-  //   return Math.floor((timestamp / 1000) % 60);
-  // },
-
-  // getMilliseconds(timestamp) {
-  //   return Math.round((timestamp % 1000) / 100);
-  // }
 };

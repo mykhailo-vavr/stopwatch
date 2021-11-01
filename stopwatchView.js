@@ -1,5 +1,3 @@
-import { model } from './stopwatchModel.js';
-
 export const view = {
   animatedItems: [
     document.querySelector('.stopwatch-clockwise'),
@@ -7,14 +5,7 @@ export const view = {
   ],
   btnContainer: document.querySelector('.btn_container'),
   lapsContainer: document.querySelector('.laps_container'),
-
-  start() {
-    for (const timeName of model.timeList) {
-      this[timeName] = document.querySelector(
-        `[data-time="${timeName}"]`
-      );
-    }
-  },
+  timeText: document.querySelector('.stopwatch-time_text'),
 
   animate(action) {
     for (const item of this.animatedItems) {
@@ -32,19 +23,12 @@ export const view = {
     item.style.animation = '';
   },
 
-  setTimeToCell(timeName, time) {
-    let timeText = this.getTimeText(time);
-    this[timeName].textContent = timeText;
-  },
-
-  getTimeText(time) {
-    return time <= 9 ? `0${time}` : time;
+  setTime(timeText = '00 : 00 : 00') {
+    this.timeText.textContent = timeText;
   },
 
   restartMeasuring() {
-    for (const timeName of model.timeList) {
-      this.setTimeToCell(timeName, 0);
-    }
+    this.setTime();
 
     for (const item of this.animatedItems) {
       item.style.cssText = '';
@@ -54,20 +38,19 @@ export const view = {
   },
 
   addLap(options) {
+    let lapsContainer = this.lapsContainer;
     let lapHTML = `
-      <div class="laps_container">
-        <div class="laps_container-item">
-          <span class="laps_container-item-counter">
-            Lap<sup>${options.count}</sup>
-          </span>
-          <span class="laps_container-item-time">00:03.1</span>
-          <span class="laps_container-item-difference">
-            +00:22.2
-          </span>
+      <div class="laps_container-item">
+        <span class="laps_container-item-counter">
+          Lap<sup>${options.count}</sup>
+        </span>
+        <span class="laps_container-item-time">${options.time}</span>
+        <span class="laps_container-item-difference">
+          ${options.differenceSign}${options.difference}
+        </span>
       </div>
     `;
-
-    this.lapsContainer.insertAdjacentHTML('afterbegin', lapHTML);
+    lapsContainer.insertAdjacentHTML('afterbegin', lapHTML);
   },
 
   replaceBtn(btns) {

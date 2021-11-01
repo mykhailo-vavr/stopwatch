@@ -46,7 +46,6 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  /* animation: rotate 60s linear 0s infinite; */
 }
 
 .stopwatch-clockwise::after {
@@ -96,7 +95,6 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  /* animation: rotate 1s linear 0s infinite; */
 }
 
 .stopwatch-clock-clockwise::after {
@@ -108,15 +106,6 @@ body {
   background: #2c2b2c;
   width: 1.3px;
   height: 12px;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(calc(360deg));
-  }
 }
 
 /* --------------

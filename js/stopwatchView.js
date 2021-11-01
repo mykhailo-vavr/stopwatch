@@ -1,26 +1,66 @@
 export const view = {
   animatedItems: [
-    document.querySelector('.stopwatch-clockwise'),
-    document.querySelector('.stopwatch-clock-clockwise')
+    {
+      item: document.querySelector('.stopwatch-clockwise'),
+      name: 'Triangle'
+    },
+    {
+      item: document.querySelector('.stopwatch-clock-clockwise'),
+      name: 'Line'
+    }
   ],
   btnContainer: document.querySelector('.btn_container'),
   lapsContainer: document.querySelector('.laps_container'),
   timeText: document.querySelector('.stopwatch-time_text'),
+  styleContainer: document.querySelector('style'),
 
   animate(action) {
     for (const item of this.animatedItems) {
       this[`${action}Animate`](item);
     }
+    if (action === 'stop') {
+      this.clearKeyframes();
+    }
   },
 
-  startAnimate(item) {
-    item.style.animation = `rotate ${
+  startAnimate({ item, name }) {
+    this.setKeyframe(name, this.getAngle(item));
+    item.style.animation = `rotate${name} ${
       item.dataset.period || 0
     }s linear 0s infinite`;
   },
 
-  stopAnimate(item) {
+  stopAnimate({ item }) {
+    item.style.transform = `rotate(${this.getAngle(item)}deg`;
     item.style.animation = '';
+  },
+
+  setKeyframe(name, angle) {
+    let keyframeCSS = `
+      @keyframes rotate${name} {
+        from {
+          transform: rotate(${angle}deg);
+        }
+        to {
+          transform: rotate(${angle + 360}deg);
+        }
+      }`;
+
+    this.styleContainer.insertAdjacentHTML('afterbegin', keyframeCSS);
+  },
+
+  clearKeyframes() {
+    this.styleContainer.innerHTML = '';
+  },
+
+  getAngle(item) {
+    let matrix = getComputedStyle(item).transform;
+    if (matrix === 'none') return 0;
+    let values = matrix.split(',');
+    let a = values[0].split('(')[1];
+    let b = values[1];
+    let angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+    return angle < 0 ? angle + 360 : angle;
   },
 
   setTime(timeText = '00 : 00 : 00') {
@@ -30,9 +70,10 @@ export const view = {
   restartMeasuring() {
     this.setTime();
 
-    for (const item of this.animatedItems) {
+    for (const { item } of this.animatedItems) {
       item.style.cssText = '';
     }
+    this.clearKeyframes();
 
     this.lapsContainer.innerHTML = '';
   },
@@ -54,38 +95,6 @@ export const view = {
   },
 
   replaceBtn(btns) {
-    // let btnsOptions = {
-    //   start: {
-    //     title: 'Start',
-    //     class: ['btn', 'start-btn'],
-    //     action: 'startMeasuring',
-    //     replace: ['lap', 'stop']
-    //   },
-    //   lap: {
-    //     title: 'Lap',
-    //     class: ['btn', 'left-btn'],
-    //     action: 'fixLap',
-    //     replace: []
-    //   },
-    //   stop: {
-    //     title: 'Stop',
-    //     class: ['btn', 'right-btn'],
-    //     action: 'stopMeasuring',
-    //     replace: []
-    //   },
-    //   restart: {
-    //     title: 'Restart',
-    //     class: ['btn', 'left-btn'],
-    //     action: 'restartMeasuring',
-    //     replace: ['start']
-    //   },
-    //   resume: {
-    //     title: 'Resume',
-    //     class: ['btn', 'right-btn'],
-    //     action: 'startMeasuring',
-    //     replace: ['lap', 'stop']
-    //   }
-    // };
     let btnsHTML = {
       start: `
         <button

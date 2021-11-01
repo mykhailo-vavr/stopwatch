@@ -11,6 +11,8 @@ export const model = {
   startMeasuring() {
     view.animate('start');
     this.startTime = Date.now() - this.elapsedTime;
+    this.elapsedTime = Date.now() - this.startTime;
+    view.setTime(this.getTimeText());
 
     this.stopwatchID = setInterval(() => {
       this.elapsedTime = Date.now() - this.startTime;

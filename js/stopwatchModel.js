@@ -4,17 +4,18 @@ export const model = {
   timeList: ['minutes', 'seconds', 'milliseconds'],
   second: 1000,
   countOfLaps: 0,
-  ms: 0,
   msAfterPrevLapFix: 0,
   msAfterCurrentLapFix: 0,
+  elapsedTime: 0,
 
   startMeasuring() {
     view.animate('start');
-    this.setTime();
-    this.stopwatchID = setInterval(
-      this.setTime.bind(this),
-      this.second / 10
-    );
+    this.startTime = Date.now() - this.elapsedTime;
+
+    this.stopwatchID = setInterval(() => {
+      this.elapsedTime = Date.now() - this.startTime;
+      view.setTime(this.getTimeText());
+    }, this.second / 10);
   },
 
   stopMeasuring() {
@@ -25,37 +26,32 @@ export const model = {
   restartMeasuring() {
     clearInterval(this.stopwatchID);
     this.countOfLaps = 0;
-    this.ms = 0;
     this.msAfterPrevLapFix = 0;
     this.msAfterCurrentLapFix = 0;
     view.restartMeasuring();
+    this.elapsedTime = 0;
   },
 
   fixLap() {
     let difference =
-      this.ms -
+      this.elapsedTime -
       this.msAfterCurrentLapFix -
       (this.msAfterCurrentLapFix - this.msAfterPrevLapFix);
 
     view.addLap({
       count: ++this.countOfLaps,
       time: this.getTimeText(
-        this.ms - this.msAfterCurrentLapFix,
+        this.elapsedTime - this.msAfterCurrentLapFix,
         ':'
       ),
       difference: this.getTimeText(Math.abs(difference), ':'),
       differenceSign: difference < 0 ? '-' : '+'
     });
     this.msAfterPrevLapFix = this.msAfterCurrentLapFix;
-    this.msAfterCurrentLapFix = this.ms;
+    this.msAfterCurrentLapFix = this.elapsedTime;
   },
 
-  setTime() {
-    this.ms++;
-    view.setTime(this.getTimeText());
-  },
-
-  getTimeText(ms = this.ms, separator = ' : ') {
+  getTimeText(ms = this.elapsedTime, separator = ' : ') {
     const capitalizeFirst = word =>
       word[0].toUpperCase() + word.slice(1);
 
@@ -65,15 +61,15 @@ export const model = {
       .join(separator);
   },
 
-  getMinutes(ms = this.ms) {
-    return Math.floor((ms / 10 / 60) % 60);
+  getMinutes(ms = this.elapsedTime) {
+    return Math.floor((ms / 1000 / 60) % 60);
   },
 
-  getSeconds(ms = this.ms) {
-    return Math.floor((ms / 10) % 60);
+  getSeconds(ms = this.elapsedTime) {
+    return Math.floor((ms / 1000) % 60);
   },
 
-  getMilliseconds(ms = this.ms) {
-    return ms % 10;
+  getMilliseconds(ms = this.elapsedTime) {
+    return Math.floor((ms % 1000) / 100);
   }
 };
